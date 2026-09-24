@@ -1,3 +1,5 @@
+![Captura de la app](docs/captura.png)
+
 # Lista de tareas
 
 Aplicación web para llevar una lista de tareas: agregarlas, marcarlas como completadas,
