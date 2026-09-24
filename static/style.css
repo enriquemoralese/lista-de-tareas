@@ -1,0 +1,69 @@
+/* Por ahora solo lo necesario para que la lista se sienta fluida.
+   El diseño completo (colores, fondo, tipografía) llega en el paso de diseño. */
+
+.lista {
+    list-style: none;
+    padding: 0 0.25rem;
+    overflow-x: clip; /* evita una barra de scroll horizontal mientras la tarea se desliza */
+}
+
+.tarea label {
+    display: block;
+    padding: 0.2rem 0;
+    cursor: pointer;
+}
+
+/* El texto se tacha en cuanto el checkbox está marcado, sin esperar al servidor. */
+.tarea .titulo {
+    transition: opacity 0.2s ease;
+}
+
+.tarea:has(input:checked) .titulo {
+    text-decoration: line-through;
+    opacity: 0.55;
+}
+
+/* Salida: la tarea se desvanece, se desliza a la derecha y cierra su hueco. */
+.tarea {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        height 0.3s ease 0.1s;
+}
+
+.tarea.saliendo {
+    opacity: 0;
+    transform: translateX(1.5rem);
+    overflow: hidden;
+}
+
+/* Entrada: la tarea que acaba de llegar aparece desde arriba. */
+.tarea.entrando {
+    animation: entrar 0.35s ease-out;
+}
+
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+}
+
+/* Cambio suave entre una carga de página y la siguiente (Chrome, Edge y Safari recientes). */
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+}
+
+/* Si la persona pidió menos movimiento en su sistema, se respeta. */
+@media (prefers-reduced-motion: reduce) {
+    .tarea,
+    .tarea .titulo {
+        transition: none;
+    }
+
+    .tarea.entrando {
+        animation: none;
+    }
+}

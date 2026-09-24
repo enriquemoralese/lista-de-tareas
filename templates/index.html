@@ -1,29 +1,57 @@
+{# Una fila de la lista. Es un macro para no repetir el mismo HTML en las dos listas. -#}
+{% macro fila_tarea(tarea) %}
+    <li class="tarea" data-id="{{ tarea.id }}">
+        <form action="{{ url_for('completar', tarea_id=tarea.id) }}" method="post">
+            <label>
+                <input type="checkbox" {% if tarea.completada %}checked{% endif %}>
+                <span class="titulo">{{ tarea.titulo }}</span>
+            </label>
+        </form>
+    </li>
+{% endmacro -%}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de tareas</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <main>
         <h1>Lista de tareas</h1>
 
-        <form action="{{ url_for('agregar') }}" method="post">
+        <form id="form-agregar" action="{{ url_for('agregar') }}" method="post">
             <input type="text" name="titulo" placeholder="¿Qué tienes que hacer?"
                    required maxlength="200" autofocus>
             <button type="submit">Agregar</button>
         </form>
 
-        {% if tareas %}
-            <ul>
-                {% for tarea in tareas %}
-                    <li>{{ tarea.titulo }}</li>
+        {% if pendientes %}
+            <ul class="lista pendientes">
+                {% for tarea in pendientes %}
+                    {{ fila_tarea(tarea) }}
                 {% endfor %}
             </ul>
+        {% elif completadas %}
+            <p>¡Todo listo! No tienes tareas pendientes.</p>
         {% else %}
             <p>Todavía no hay tareas.</p>
         {% endif %}
+
+        {% if completadas %}
+            <details>
+                <summary>Completadas ({{ completadas | length }})</summary>
+                <ul class="lista">
+                    {% for tarea in completadas %}
+                        {{ fila_tarea(tarea) }}
+                    {% endfor %}
+                </ul>
+            </details>
+        {% endif %}
     </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
