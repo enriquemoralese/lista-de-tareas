@@ -28,7 +28,7 @@ def index():
 def agregar():
     titulo = request.form.get("titulo", "").strip()
     if titulo:
-        tareas.append({"id": next(contador_ids), "titulo": titulo, "completada": False})
+        tareas.append({"id": next(contador_ids), "titulo": titulo, "completada": False, "nota": ""})
     return redirect(url_for("index"))
 
 
@@ -36,6 +36,21 @@ def agregar():
 def completar(tarea_id):
     tarea = buscar_tarea(tarea_id)
     tarea["completada"] = not tarea["completada"]  # Alterna: completada <-> pendiente
+    return redirect(url_for("index"))
+
+
+@app.route("/nota/<int:tarea_id>", methods=["POST"])
+def nota(tarea_id):
+    tarea = buscar_tarea(tarea_id)
+    # Guardar una nota vacía es la forma de borrarla.
+    tarea["nota"] = request.form.get("nota", "").strip()
+    return redirect(url_for("index"))
+
+
+@app.route("/eliminar/<int:tarea_id>", methods=["POST"])
+def eliminar(tarea_id):
+    tarea = buscar_tarea(tarea_id)
+    tareas.remove(tarea)
     return redirect(url_for("index"))
 
 

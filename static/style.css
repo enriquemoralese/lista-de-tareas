@@ -1,33 +1,506 @@
-/* Por ahora solo lo necesario para que la lista se sienta fluida.
-   El diseño completo (colores, fondo, tipografía) llega en el paso de diseño. */
+/* =========================================================================
+   Diseño "Noche neón": tarjeta de vidrio sobre un fondo oscuro con
+   cuadrícula y dos manchas de luz que flotan.
+   Los colores y medidas están todos en variables, para tocarlos en un
+   solo sitio.
+   ========================================================================= */
+
+:root {
+    --fuente: "Space Grotesk", system-ui, sans-serif;
+    --fuente-titulo: var(--fuente);
+
+    --fondo: #07070d;
+    --texto: #eef0ff;
+    --texto-suave: rgba(238, 240, 255, .45);
+
+    --tarjeta: rgba(16, 16, 32, .62);
+    --borde: rgba(255, 255, 255, .08);
+    --radio: 22px;
+    --radio-control: 12px;
+    --radio-check: 50%;
+    --sombra: 0 0 0 1px rgba(34, 211, 238, .06), 0 30px 80px rgba(0, 0, 0, .6), 0 0 60px rgba(124, 58, 237, .18);
+
+    --acento: #22d3ee;
+    --anillo: rgba(34, 211, 238, .18);
+
+    --contador-texto: #67e8f9;
+    --contador-fondo: rgba(34, 211, 238, .1);
+
+    --input-fondo: rgba(255, 255, 255, .04);
+    --input-borde: rgba(255, 255, 255, .1);
+
+    --boton-texto: #07070d;
+    --boton-fondo: linear-gradient(135deg, #22d3ee, #a855f7 60%, #ec4899);
+    --boton-sombra: 0 0 24px rgba(168, 85, 247, .45);
+
+    --fila-hover: rgba(255, 255, 255, .04);
+    --check-borde: rgba(255, 255, 255, .28);
+    --check-marca: #07070d;
+    --check-fondo: #22d3ee;
+    --check-sombra: 0 0 14px rgba(34, 211, 238, .7);
+
+    --peligro: #fb7185;
+    --peligro-fondo: rgba(251, 113, 133, .12);
+}
+
+/* ---------------------------------------------------------------- Base -- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 10vh 16px 48px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: var(--fuente);
+    color: var(--texto);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+
+    /* Dos degradados de una sola línea que se repiten cada 44px: la cuadrícula.
+       Debajo de ellos, el color de fondo. */
+    background:
+        linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+        var(--fondo);
+}
+
+/* Las dos manchas de luz. Son círculos enormes, muy desenfocados y fijos,
+   detrás del contenido (z-index: -1), que se mueven muy despacio. */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    width: 46vmax;
+    height: 46vmax;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: .55;
+    animation: flotar 18s ease-in-out infinite alternate;
+}
+
+body::before {
+    background: #7c3aed; /* morada, arriba a la izquierda */
+    top: -18vmax;
+    left: -12vmax;
+}
+
+body::after {
+    background: #06b6d4; /* turquesa, abajo a la derecha */
+    bottom: -22vmax;
+    right: -14vmax;
+    opacity: .4;
+    animation-delay: -9s; /* empieza a la mitad, para que no vayan a la vez */
+}
+
+@keyframes flotar {
+    to {
+        transform: translate(8vmax, 6vmax) scale(1.15);
+    }
+}
+
+/* Foco visible para el teclado, en lo que no lo trae ya de serie. */
+.tarea input[type="checkbox"]:focus-visible,
+#form-agregar button:focus-visible,
+summary:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------ Tarjeta -- */
+
+.tarjeta {
+    position: relative;
+    width: 100%;
+    max-width: 34rem;
+    padding: 2rem;
+    border-radius: var(--radio);
+    background: var(--tarjeta);
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra);
+
+    /* El efecto vidrio: desenfoca lo que queda por detrás de la tarjeta. */
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* --------------------------------------------------------- Encabezado -- */
+
+.encabezado {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+h1 {
+    margin: 0;
+    font-family: var(--fuente-titulo);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+/* La píldora con el número de pendientes. El número lo calcula el servidor. */
+.contador {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    color: var(--contador-texto);
+    background: var(--contador-fondo);
+}
+
+/* --------------------------------------------- Formulario de agregar -- */
+
+#form-agregar {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+#form-agregar input {
+    flex: 1;
+    min-width: 0; /* deja que el input se encoja en pantallas angostas */
+    font: inherit;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radio-control);
+    color: var(--texto);
+    background: var(--input-fondo);
+    border: 1px solid var(--input-borde);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+#form-agregar input::placeholder {
+    color: var(--texto-suave);
+}
+
+#form-agregar input:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 4px var(--anillo);
+}
+
+#form-agregar button {
+    font: inherit;
+    font-weight: 600;
+    padding: 0 1.25rem;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radio-control);
+    color: var(--boton-texto);
+    background: var(--boton-fondo);  /* degradado turquesa -> morado -> rosa */
+    box-shadow: var(--boton-sombra); /* el brillo morado de alrededor */
+    transition: transform .15s, box-shadow .2s, filter .2s;
+}
+
+#form-agregar button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+/* ---------------------------------------------------------- La lista -- */
 
 .lista {
     list-style: none;
-    padding: 0 0.25rem;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.25rem;
     overflow-x: clip; /* evita una barra de scroll horizontal mientras la tarea se desliza */
 }
 
+.tarea {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.75rem;
+    border-radius: var(--radio-control);
+}
+
+.tarea:hover {
+    background: var(--fila-hover);
+}
+
+.form-completar {
+    flex: 1;
+    min-width: 0;
+}
+
 .tarea label {
-    display: block;
-    padding: 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.45rem 0;
     cursor: pointer;
 }
 
-/* El texto se tacha en cuanto el checkbox está marcado, sin esperar al servidor. */
-.tarea .titulo {
-    transition: opacity 0.2s ease;
+/* -------------------------------------------------- Checkbox redondo -- */
+
+/* Se conserva el <input type="checkbox"> de verdad (sigue funcionando con
+   teclado y con lectores de pantalla); solo se le quita la apariencia
+   del sistema con appearance: none. */
+.tarea input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    margin: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    border-radius: var(--radio-check);
+    border: 2px solid var(--check-borde);
+    background: transparent;
+    transition: all .2s;
 }
 
+/* La palomita: un cuadradito recortado con clip-path en forma de ✓.
+   Crece de 0 a 1 con un cubic-bezier que se pasa de 1, de ahí el rebote. */
+.tarea input[type="checkbox"]::before {
+    content: "";
+    width: 0.7rem;
+    height: 0.7rem;
+    background: var(--check-marca);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transform: scale(0);
+    transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.tarea input[type="checkbox"]:hover {
+    border-color: var(--acento);
+}
+
+/* Al marcarse se llena de turquesa y enciende su brillo. */
+.tarea input[type="checkbox"]:checked {
+    border-color: transparent;
+    background: var(--check-fondo);
+    box-shadow: var(--check-sombra);
+}
+
+.tarea input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+.titulo {
+    overflow-wrap: anywhere; /* parte una palabra larguísima en vez de desbordar */
+    transition: color .2s;
+}
+
+/* El texto se tacha en cuanto el checkbox está marcado, sin esperar al servidor. */
 .tarea:has(input:checked) .titulo {
     text-decoration: line-through;
-    opacity: 0.55;
+    color: var(--texto-suave);
 }
+
+/* ------------------------------------------------ Botón de eliminar -- */
+
+.boton-eliminar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--texto-suave);
+    background: transparent;
+    opacity: 0; /* escondido hasta que el ratón pasa por la fila */
+    transition: opacity .2s, color .2s, background .2s;
+}
+
+.tarea:hover .boton-eliminar,
+.boton-eliminar:focus-visible {
+    opacity: 1;
+}
+
+.boton-eliminar:hover {
+    color: var(--peligro);
+    background: var(--peligro-fondo);
+}
+
+/* En pantallas táctiles no hay "hover", así que siempre se ve un poco. */
+@media (hover: none) {
+    .boton-eliminar {
+        opacity: 0.6;
+    }
+}
+
+/* ------------------------------------------------------- Completadas -- */
+
+#completadas {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--borde);
+}
+
+#completadas summary {
+    list-style: none; /* quita el triangulito de Firefox */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+
+summary::-webkit-details-marker {
+    display: none; /* quita el triangulito de Chrome y Safari */
+}
+
+/* La flecha: dos lados de un cuadradito girado. Apunta a la derecha cuando
+   la sección está cerrada y gira hacia abajo cuando se abre. */
+#completadas summary::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform .2s;
+}
+
+#completadas[open] summary::before {
+    transform: rotate(45deg);
+}
+
+#completadas .lista {
+    margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------- Las notas -- */
+
+/* La nota se va a su propio renglón, debajo del título de la tarea. */
+.tarea {
+    flex-wrap: wrap;
+    row-gap: 0;
+}
+
+.nota {
+    flex-basis: 100%;    /* ocupa la línea entera, así el resto no se mueve */
+    margin-left: 2.2rem; /* alineada con el título: 1.35rem del checkbox + 0.85rem de hueco */
+    font-size: 0.8rem;
+}
+
+.nota summary {
+    display: block;   /* sin flecha: aquí el texto de la nota es el botón */
+    list-style: none;
+    cursor: pointer;
+    padding: 0.1rem 0 0.35rem;
+    color: var(--texto-suave);
+    white-space: pre-wrap; /* respeta los saltos de línea que escriba la persona */
+    transition: color .2s, opacity .2s;
+}
+
+.nota summary:hover {
+    color: var(--acento);
+}
+
+/* Si la tarea todavía no tiene nota, el "+ nota" solo asoma al pasar el ratón,
+   al llegar con el teclado o mientras se está editando. */
+.nota.vacia > summary {
+    opacity: 0;
+}
+
+.tarea:hover .nota.vacia > summary,
+.nota.vacia > summary:focus-visible,
+.nota.vacia[open] > summary {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .nota.vacia > summary {
+        opacity: 0.6;
+    }
+}
+
+.form-nota {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-bottom: 0.5rem;
+}
+
+.form-nota textarea {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.65rem;
+    color: var(--texto);
+    background: var(--input-fondo);
+    border: 1px solid var(--input-borde);
+    border-radius: var(--radio-control);
+    resize: vertical;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.form-nota textarea::placeholder {
+    color: var(--texto-suave);
+}
+
+.form-nota textarea:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 4px var(--anillo);
+}
+
+.form-nota button {
+    align-self: flex-start;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+    color: var(--contador-texto);
+    background: var(--contador-fondo);
+    border: 1px solid transparent;
+    border-radius: var(--radio-control);
+    transition: border-color .2s;
+}
+
+.form-nota button:hover {
+    border-color: var(--acento);
+}
+
+/* --------------------------------------------------- Mensajes vacíos -- */
+
+.vacio {
+    margin: 0;
+    padding: 1.75rem 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio-control);
+    background: var(--input-fondo);
+}
+
+/* ------------------------------------------------------ Animaciones -- */
 
 /* Salida: la tarea se desvanece, se desliza a la derecha y cierra su hueco. */
 .tarea {
     transition:
+        background .2s,
         opacity 0.3s ease,
         transform 0.3s ease,
+        padding 0.3s ease 0.1s,
         height 0.3s ease 0.1s;
 }
 
@@ -35,6 +508,7 @@
     opacity: 0;
     transform: translateX(1.5rem);
     overflow: hidden;
+    padding-block: 0; /* si no, el hueco del padding se queda abierto */
 }
 
 /* Entrada: la tarea que acaba de llegar aparece desde arriba. */
@@ -56,14 +530,27 @@
     }
 }
 
-/* Si la persona pidió menos movimiento en su sistema, se respeta. */
-@media (prefers-reduced-motion: reduce) {
-    .tarea,
-    .tarea .titulo {
-        transition: none;
+/* ------------------------------------------------------------ Celular -- */
+
+@media (max-width: 480px) {
+    .tarjeta {
+        padding: 1.25rem;
     }
 
-    .tarea.entrando {
-        animation: none;
+    h1 {
+        font-size: 1.6rem;
+    }
+}
+
+/* ----------------------------------------------------- Menos movimiento -- */
+
+/* Si la persona pidió menos movimiento en su sistema, se apaga todo:
+   las manchas de luz, las entradas, las salidas y las transiciones. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
     }
 }
