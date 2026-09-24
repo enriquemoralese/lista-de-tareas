@@ -6,7 +6,24 @@
     <title>Lista de tareas</title>
 </head>
 <body>
-    <h1>Lista de tareas</h1>
-    <p>Todavía no hay tareas.</p>
+    <main>
+        <h1>Lista de tareas</h1>
+
+        <form action="{{ url_for('agregar') }}" method="post">
+            <input type="text" name="titulo" placeholder="¿Qué tienes que hacer?"
+                   required maxlength="200" autofocus>
+            <button type="submit">Agregar</button>
+        </form>
+
+        {% if tareas %}
+            <ul>
+                {% for tarea in tareas %}
+                    <li>{{ tarea.titulo }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Todavía no hay tareas.</p>
+        {% endif %}
+    </main>
 </body>
 </html>
