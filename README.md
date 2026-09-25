@@ -8,11 +8,11 @@ CSS y un poco de JavaScript.
 
 ## Funcionalidades
 
-- Agregar una tarea escribiéndola en el campo de texto y pulsando "Agregar".
+- Agregar una tarea escribiéndola en el campo de texto y presionando "Agregar".
 - Marcarla como completada con el checkbox. Las completadas salen de la lista principal
   y pasan a la sección desplegable "Completadas". Si se desmarcan, vuelven.
 - Eliminar una tarea con el botón de la papelera, que aparece al pasar el ratón por encima.
-- Ponerle una nota a cada tarea. Pasa el ratón sobre una tarea y pulsa "+ nota" para
+- Ponerle una nota a cada tarea. Pasa el ratón sobre una tarea y da clic en "+ nota" para
   escribirla. Para cambiarla, haz clic en la nota. Para borrarla, guárdala vacía.
 - Contador de tareas pendientes en el encabezado.
 - Animaciones al agregar y al quitar tareas, que se desactivan solas si el sistema
@@ -82,7 +82,7 @@ python app.py
 
 Abre http://localhost:3000 en el navegador.
 
-Para detener el servidor, pulsa Ctrl+C en la terminal. Para salir del entorno virtual,
+Para detener el servidor, presiona Ctrl+C en la terminal. Para salir del entorno virtual,
 escribe `deactivate`.
 
 Las tareas se guardan en la memoria del servidor, no en una base de datos. Esto significa
@@ -123,9 +123,11 @@ la última acción. Se usan formularios y no enlaces porque una petición GET no
 modificar datos.
 
 **JavaScript solo para las animaciones.** El servidor es el que manda: todo lo que cambia
-pasa por él. El JavaScript del proyecto únicamente retrasa el envío de un formulario lo
-que dura una animación y marca la fila que acaba de llegar. Si se desactiva JavaScript,
-la aplicación sigue funcionando entera, solo que sin animaciones.
+pasa por él. El JavaScript del proyecto retrasa el envío de los formularios lo que dura
+una animación y marca la fila que acaba de llegar. Sin JavaScript se pueden agregar
+tareas, eliminarlas y guardar notas, porque cada una de esas acciones es un formulario
+con su propio botón de envío. Lo único que deja de funcionar es marcar una tarea como
+completada, porque el checkbox no envía su formulario por sí solo: lo envía el JavaScript.
 
 ## Uso de IA
 
