@@ -1,6 +1,6 @@
-![Captura de la app](docs/captura.png)
-
 # Lista de tareas
+
+![Captura de la app](docs/captura.png)
 
 Aplicación web para llevar una lista de tareas: agregarlas, marcarlas como completadas,
 eliminarlas y ponerles una nota. El servidor está hecho con Flask y la interfaz con HTML,
