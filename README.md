@@ -86,9 +86,7 @@ Para detener el servidor, presiona Ctrl+C en la terminal. Para salir del entorno
 escribe `deactivate`.
 
 Las tareas se guardan en la memoria del servidor, no en una base de datos. Esto significa
-que se borran al detener o reiniciar el servidor. La aplicación arranca en modo depuración,
-así que también se reinicia (y la lista se vacía) cada vez que se guarda un cambio en
-un archivo del proyecto.
+que se borran al detener o reiniciar el servidor. 
 
 ## Estructura del proyecto
 
@@ -122,8 +120,7 @@ principal. Este patrón, Post/Redirect/Get, evita que al recargar el navegador s
 la última acción. Se usan formularios y no enlaces porque una petición GET no debe
 modificar datos.
 
-**JavaScript solo para las animaciones.** El servidor es el que manda: todo lo que cambia
-pasa por él. El JavaScript del proyecto retrasa el envío de los formularios lo que dura
+**JavaScript solo para las animaciones.** El JavaScript del proyecto retrasa el envío de los formularios lo que dura
 una animación y marca la fila que acaba de llegar. Sin JavaScript se pueden agregar
 tareas, eliminarlas y guardar notas, porque cada una de esas acciones es un formulario
 con su propio botón de envío. Lo único que deja de funcionar es marcar una tarea como
